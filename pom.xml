@@ -15,6 +15,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.wandoujia.hadoop.hdfs</groupId>
 			<artifactId>hdfs-client-chd4</artifactId>
 			<version>1.0.0</version>
@@ -24,6 +30,12 @@
 			<groupId>com.wandoujia.hbase</groupId>
 			<artifactId>hbase-client-cdh4</artifactId>
 			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
 		</dependency>
 	</dependencies>
 

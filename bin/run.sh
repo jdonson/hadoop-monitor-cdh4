@@ -12,6 +12,6 @@ CLASSPATH=${CLASSPATH}:./conf
 CLASSPATH=${CLASSPATH}:./$SERVICE-$VERSION.jar
 export CLASSPATH
 mkdir ./logs >/dev/null 2>&1
-mv logs/hadoop-monitor.log logs/hadoop-monitor.log.${DATE}
+mv logs/hadoop-monitor.log logs/hadoop-monitor.log.${DATE} >/dev/null 2>&1
 nohup java -Xms128m -Xmx256m com.wandoujia.hadoop.monitor.MonitorMain >logs/hadoop-monitor.log 2>&1 &
 

@@ -5,7 +5,7 @@ public class Constants {
         "fengzanfeng@wandoujia.com"
     };
 
-    public static final long interval = 60000;
+    public static final long MONITOR_INTERVAL = 300000;
 
     // HDFS Monitor
     public static final String MSG_DEAD_DATANODES = "[HDFS Monitor] [DataNode] Found Dead DataNode";
@@ -17,6 +17,8 @@ public class Constants {
     public static final String MONITOR_HBASE_WHITELIST = "monitor.hbase.whitelist";
 
     public static final String MSG_DEAD_REGIONSERVERS = "[HBase Monitor] [RegionServer] Found Dead Region Servers";
+
+    public static final String MSG_MASTER_NOT_RUNNING = "[HBase Monitor] [HMaster] HMaster Not Running";
 
     public static final String MSG_LOAD_REQUESTS = "[HBase Monitor] [RegionServer] Too Many Requests";
 

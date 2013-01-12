@@ -4,19 +4,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hbase.ClusterStatus;
+import org.apache.hadoop.hbase.HServerLoad;
 import org.apache.hadoop.hbase.ServerName;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.ipc.HMasterInterface;
 
 import com.wandoujia.common.utils.StringUtils;
 import com.wandoujia.common.utils.ThreadUtils;
 import com.wandoujia.hadoop.monitor.Constants;
 import com.wandoujia.hadoop.monitor.Monitor;
 import com.wandoujia.hadoop.monitor.MonitorConfig;
+import com.wandoujia.hadoop.monitor.jmx.RegionServerJMX;
 import com.wandoujia.hbase.HBaseClient;
 
 public class HBaseMonitor extends Monitor implements Runnable {
@@ -69,6 +74,43 @@ public class HBaseMonitor extends Monitor implements Runnable {
         }
     }
 
+    private void masterRunning(boolean isRunning) {
+        if (isRunning == false) {
+            sendMail(Constants.MSG_MASTER_NOT_RUNNING,
+                    " hbase master is not running!");
+        }
+    }
+
+    private void liveRegionServerHealth(Map<String, HServerLoad> hServersLoad) {
+        for (Map.Entry<String, HServerLoad> entry: hServersLoad.entrySet()) {
+            String host = entry.getKey();
+            HServerLoad server = entry.getValue();
+            int memStoreSizeMB = server.getMemStoreSizeInMB();
+            int regions = server.getNumberOfRegions();
+            int requests = server.getNumberOfRequests();
+            int storefiles = server.getStorefiles();
+            int storefileIndexSizeMB = server.getStorefileIndexSizeInMB();
+            int storefilesSizeMB = server.getStorefileSizeInMB();
+            int totalRequests = server.getTotalNumberOfRequests();
+            int usedHeapMB = server.getUsedHeapMB();
+            String msg = String
+                    .format("[RegionServer] %s: memstore size(MB): %d, regions: %d, requests: %d, storefiles: %d, storefileIndexSizeMB: %d, storefilesSizeMB: %d, totalRequests: %d, usedHeapMB: %d",
+                            host, memStoreSizeMB, regions, requests,
+                            storefiles, storefileIndexSizeMB, storefilesSizeMB,
+                            totalRequests, usedHeapMB);
+            logger.info(msg);
+            try {
+                Map<String, Long> metrics = RegionServerJMX.getJMXValues(host);
+                for (Map.Entry<String, Long> metricEntry: metrics.entrySet()) {
+                    logger.info(String.format("metric: %s, value: %d",
+                            metricEntry.getKey(), metricEntry.getValue()));
+                }
+            } catch (IOException e) {
+                logger.error("", e);
+            }
+        }
+    }
+
     @Override
     public void run() {
         logger.info("hbase monitor thread startup...");
@@ -78,19 +120,29 @@ public class HBaseMonitor extends Monitor implements Runnable {
             }
             try {
                 HBaseAdmin hbaseAdmin = hbaseClient.getAdmin();
+                HMasterInterface hbaseMaster = hbaseAdmin.getMaster();
+                masterRunning(hbaseMaster.isMasterRunning());
                 ClusterStatus status = hbaseAdmin.getClusterStatus();
                 int deadServers = status.getDeadServers();
                 Collection<ServerName> deadServersName = status
                         .getDeadServerNames();
-                int regionCount = status.getRegionsCount();
+                int regionsCount = status.getRegionsCount();
                 int requestsCount = status.getRequestsCount();
+                double avgLoad = status.getAverageLoad();
                 Collection<ServerName> servers = status.getServers();
+                Map<String, HServerLoad> hServersLoad = new HashMap<String, HServerLoad>();
+                for (ServerName serverName: servers) {
+                    hServersLoad.put(serverName.getHostname(),
+                            status.getLoad(serverName));
+                }
                 logger.info("dead servers: " + deadServers);
-                logger.info("region count: " + regionCount);
+                logger.info("regions count: " + regionsCount);
+                logger.info("average load: " + avgLoad);
                 logger.info("requests count: " + requestsCount);
                 logger.info("servers: " + servers);
                 logger.info("server info: " + servers);
                 deadRegionServers(deadServersName);
+                liveRegionServerHealth(hServersLoad);
             } catch (IOException e) {
                 logger.error("Monitor Thread IOException", e);
                 String msg = e.getMessage();
@@ -106,7 +158,7 @@ public class HBaseMonitor extends Monitor implements Runnable {
                 }
                 sendMail(getName() + " Monitor Thread Exception", msg);
             }
-            ThreadUtils.sleep(Constants.interval);
+            ThreadUtils.sleep(Constants.MONITOR_INTERVAL);
         }
 
         logger.info("hbase monitor thread exit...");
@@ -114,6 +166,6 @@ public class HBaseMonitor extends Monitor implements Runnable {
 
     @Override
     public String getName() {
-        return "HBase";
+        return "HBase-CDH";
     }
 }

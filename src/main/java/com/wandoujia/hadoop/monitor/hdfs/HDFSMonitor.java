@@ -125,14 +125,14 @@ public class HDFSMonitor extends Monitor implements Runnable {
                 }
                 sendMail(getName() + " Monitor Thread Exception", msg);
             }
-            ThreadUtils.sleep(Constants.interval);
+            ThreadUtils.sleep(Constants.MONITOR_INTERVAL);
         }
         logger.info("hdfs monitor thread exit...");
     }
 
     @Override
     public String getName() {
-        return "HDFS";
+        return "HDFS-CDH";
     }
 
 }
