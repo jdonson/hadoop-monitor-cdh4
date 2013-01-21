@@ -6,7 +6,7 @@ public class MonitorConfig {
 
     public static String get(String name) {
         Configuration conf = new Configuration();
-        conf.addResource("monitor-site.xml");
+        conf.addResource("hadoop-monitor.xml");
         return conf.get(name);
     }
 }

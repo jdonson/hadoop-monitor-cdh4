@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+<property>
+  <name>monitor.interval</name>
+  <value>300000</value>
+  <description>
+    unit: ms
+  </description>
+</property>
+
+<property>
+  <name>mail.receivers</name>
+  <value>fengzanfeng@wandoujia.com,315405572@qq.com,pengyuehui@wandoujia.com</value>
+</property>
+
+<property>
+  <name>monitor.hbase.whitelist</name>
+  <value>hadoop-two</value>
+</property>
+
+<property>
+  <name>monitor.hdfs.whitelist</name>
+  <value>hadoop-two</value>
+</property>
+
+</configuration>
+

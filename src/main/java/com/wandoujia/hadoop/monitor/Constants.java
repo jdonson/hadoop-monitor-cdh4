@@ -1,11 +1,11 @@
 package com.wandoujia.hadoop.monitor;
 
 public class Constants {
-    public static final String[] receivers = {
-        "fengzanfeng@wandoujia.com"
-    };
+    public static final long interval = 60000;
 
-    public static final long MONITOR_INTERVAL = 300000;
+    public static final String KEY_MONITOR_INTERVAL = "monitor.interval";
+
+    public static final String KEY_MAIL_RECEIVERS = "mail.receivers";
 
     // HDFS Monitor
     public static final String MSG_DEAD_DATANODES = "[HDFS Monitor] [DataNode] Found Dead DataNode";
@@ -18,10 +18,10 @@ public class Constants {
 
     public static final String MSG_DEAD_REGIONSERVERS = "[HBase Monitor] [RegionServer] Found Dead Region Servers";
 
-    public static final String MSG_MASTER_NOT_RUNNING = "[HBase Monitor] [HMaster] HMaster Not Running";
-
     public static final String MSG_LOAD_REQUESTS = "[HBase Monitor] [RegionServer] Too Many Requests";
 
     public static final String MSG_LOAD_REGIONS = "[HBase Monitor] [RegionServer] Too Many Regions";
+
+    public static final String MSG_MASTER_NOT_RUNNING = "[HBase Monitor] [HMaster] hbase master not running";
 
 }
