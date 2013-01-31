@@ -7,7 +7,7 @@
 
 	<property>
 		<name>fs.default.name</name>
-		<value>hdfs://192.168.100.44:54310</value>
+		<value>hdfs://192.168.100.34:54310</value>
 	</property>
 
 </configuration>

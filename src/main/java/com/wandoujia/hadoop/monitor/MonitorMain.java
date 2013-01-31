@@ -11,6 +11,7 @@ public class MonitorMain {
     private HDFSMonitor hdfsMonitor;
 
     public MonitorMain() throws IOException {
+        System.setProperty("HADOOP_USER_NAME", "work");
         hbaseMonitor = new HBaseMonitor();
         hdfsMonitor = new HDFSMonitor();
     }
