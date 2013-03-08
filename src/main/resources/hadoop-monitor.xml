@@ -5,28 +5,50 @@
 
 <configuration>
 
-<property>
-  <name>monitor.interval</name>
-  <value>300000</value>
-  <description>
-    unit: ms
-  </description>
-</property>
+	<property>
+		<name>cluster.name</name>
+		<value>tg-hadoop-clustera</value>
+		<description>
+		</description>
+	</property>
 
-<property>
-  <name>mail.receivers</name>
-  <value>fengzanfeng@wandoujia.com,315405572@qq.com,pengyuehui@wandoujia.com</value>
-</property>
+	<property>
+		<name>monitor.interval</name>
+		<value>60000</value>
+		<description>
+			unit: ms
+		</description>
+	</property>
 
-<property>
-  <name>monitor.hbase.whitelist</name>
-  <value>hadoop-two</value>
-</property>
+	<property>
+		<name>datasink.server</name>
+		<value>192.168.100.52</value>
+		<description>
+		</description>
+	</property>
 
-<property>
-  <name>monitor.hdfs.whitelist</name>
-  <value>hadoop-two</value>
-</property>
+	<property>
+		<name>datasink.profile</name>
+		<value>hadoop</value>
+		<description>
+		</description>
+	</property>
+
+	<property>
+		<name>mail.receivers</name>
+		<value>fengzanfeng@wandoujia.com,315405572@qq.com,pengyuehui@wandoujia.com
+		</value>
+	</property>
+
+	<property>
+		<name>monitor.hbase.whitelist</name>
+		<value>hadoop-two</value>
+	</property>
+
+	<property>
+		<name>monitor.hdfs.whitelist</name>
+		<value>hadoop-two</value>
+	</property>
 
 </configuration>
 

@@ -18,9 +18,9 @@ import org.apache.hadoop.hbase.ipc.HMasterInterface;
 
 import com.wandoujia.common.utils.StringUtils;
 import com.wandoujia.common.utils.ThreadUtils;
-import com.wandoujia.hadoop.monitor.Constants;
 import com.wandoujia.hadoop.monitor.Monitor;
-import com.wandoujia.hadoop.monitor.MonitorConfig;
+import com.wandoujia.hadoop.monitor.comms.Constants;
+import com.wandoujia.hadoop.monitor.comms.MonitorConfig;
 import com.wandoujia.hadoop.monitor.jmx.RegionServerJMX;
 import com.wandoujia.hbase.HBaseClient;
 
@@ -83,7 +83,7 @@ public class HBaseMonitor extends Monitor implements Runnable {
 
     private void liveRegionServerHealth(Map<String, HServerLoad> hServersLoad) {
         for (Map.Entry<String, HServerLoad> entry: hServersLoad.entrySet()) {
-            String host = entry.getKey();
+            String regionServer = entry.getKey();
             HServerLoad server = entry.getValue();
             int memStoreSizeMB = server.getMemStoreSizeInMB();
             int regions = server.getNumberOfRegions();
@@ -95,17 +95,23 @@ public class HBaseMonitor extends Monitor implements Runnable {
             int usedHeapMB = server.getUsedHeapMB();
             String msg = String
                     .format("[RegionServer] %s: memstore size(MB): %d, regions: %d, requests: %d, storefiles: %d, storefileIndexSizeMB: %d, storefilesSizeMB: %d, totalRequests: %d, usedHeapMB: %d",
-                            host, memStoreSizeMB, regions, requests,
+                            regionServer, memStoreSizeMB, regions, requests,
                             storefiles, storefileIndexSizeMB, storefilesSizeMB,
                             totalRequests, usedHeapMB);
             logger.info(msg);
             try {
-                Map<String, Long> metrics = RegionServerJMX.getJMXValues(host);
-                for (Map.Entry<String, Long> metricEntry: metrics.entrySet()) {
-                    logger.info(String.format("metric: %s, value: %d",
-                            metricEntry.getKey(), metricEntry.getValue()));
+                Map<String, String> kvs = RegionServerJMX
+                        .getJMXValues(regionServer);
+                for (Map.Entry<String, String> kv: kvs.entrySet()) {
+                    logger.info(String.format("key: %s, value: %s",
+                            kv.getKey(), kv.getValue()));
                 }
+                // sink event to muce 2.0 dataserver
+                kvs.put(Constants.FIELD_KEY_REGIONSERVER, regionServer);
+                sink.sink(Constants.EVENT_HBASE_REGIONSERVER_METRICS, kvs);
             } catch (IOException e) {
+                logger.error("", e);
+            } catch (InterruptedException e) {
                 logger.error("", e);
             }
         }

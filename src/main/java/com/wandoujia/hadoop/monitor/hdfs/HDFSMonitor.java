@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,9 +17,10 @@ import org.apache.hadoop.hdfs.protocol.HdfsConstants.DatanodeReportType;
 import com.wandoujia.common.utils.StringUtils;
 import com.wandoujia.common.utils.ThreadUtils;
 import com.wandoujia.hadoop.hdfs.HDFSClient;
-import com.wandoujia.hadoop.monitor.Constants;
 import com.wandoujia.hadoop.monitor.Monitor;
-import com.wandoujia.hadoop.monitor.MonitorConfig;
+import com.wandoujia.hadoop.monitor.comms.Constants;
+import com.wandoujia.hadoop.monitor.comms.MonitorConfig;
+import com.wandoujia.hadoop.monitor.jmx.NameNodeJMX;
 
 public class HDFSMonitor extends Monitor implements Runnable {
     private final Log logger = LogFactory.getLog(HDFSMonitor.class);
@@ -81,6 +83,23 @@ public class HDFSMonitor extends Monitor implements Runnable {
         }
     }
 
+    private void sinkMetrics(String namenodeHost) {
+        try {
+            Map<String, String> kvs = NameNodeJMX.getJMXValues(namenodeHost);
+            for (Map.Entry<String, String> kv: kvs.entrySet()) {
+                logger.info(String.format("key: %s, value: %s", kv.getKey(),
+                        kv.getValue()));
+            }
+            // sink event to muce 2.0 dataserver
+            kvs.put(Constants.FIELD_KEY_NAMENODE, namenodeHost);
+            sink.sink(Constants.EVENT_HADOOP_NAMENODE_METRICS, kvs);
+        } catch (IOException e) {
+            logger.error("", e);
+        } catch (InterruptedException e) {
+            logger.error("", e);
+        }
+    }
+
     @Override
     public void run() {
         logger.info("hdfs monitor thread startup...");
@@ -90,6 +109,7 @@ public class HDFSMonitor extends Monitor implements Runnable {
             }
             try {
                 URI uri = dfs.getUri();
+
                 String serviceName = dfs.getCanonicalServiceName();
                 long corruptBlocksCount = dfs.getCorruptBlocksCount();
                 long missingBlocksCount = dfs.getMissingBlocksCount();
@@ -110,6 +130,7 @@ public class HDFSMonitor extends Monitor implements Runnable {
                 logger.info("hdfs used: " + used);
                 corruptBlocks(corruptBlocksCount);
                 deadDataNodes(deadDataNodes);
+                this.sinkMetrics(uri.getHost());
             } catch (IOException e) {
                 logger.error("Monitor Thread IOException", e);
                 String msg = e.getMessage();

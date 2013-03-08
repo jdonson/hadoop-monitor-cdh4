@@ -1,4 +1,4 @@
-package com.wandoujia.hadoop.monitor;
+package com.wandoujia.hadoop.monitor.comms;
 
 import org.apache.hadoop.conf.Configuration;
 

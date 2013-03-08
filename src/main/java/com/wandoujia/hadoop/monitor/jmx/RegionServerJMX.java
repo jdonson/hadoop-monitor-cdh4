@@ -27,9 +27,9 @@ public class RegionServerJMX {
         "storefiles", "stores", "requests"
     };
 
-    public static Map<String, Long> getJMXValues(String host)
+    public static Map<String, String> getJMXValues(String host)
             throws IOException {
-        Map<String, Long> values = new HashMap<String, Long>();
+        Map<String, String> values = new HashMap<String, String>();
         String url = String.format("http://%s:%d/jmx", host, REGIONSERVER_PORT);
         String jmxJson = JMXUtils.fetchJMX(url);
         ObjectMapper mapper = new ObjectMapper();
@@ -37,10 +37,10 @@ public class RegionServerJMX {
         for (String metric: metrics) {
             List<JsonNode> nodes = root.findValues(metric);
             if (nodes == null || nodes.size() != 1) {
-                logger.warn("get regionserver metric failed: " + metric);
+                logger.warn("get regionserver metrics failed: " + metric);
                 continue;
             }
-            long value = nodes.get(0).getLongValue();
+            String value = nodes.get(0).asText();
             values.put(metric, value);
         }
         return values;
