@@ -15,6 +15,8 @@ public class NameNodeJMX {
 
     public static final int NAMENODE_PORT = 50070;
 
+    public static final String JMX_URL = "http://%s:%d/jmx";
+
     public static String[] metrics = {
         "ReceivedBytes", "SentBytes", "RpcQueueTimeNumOps",
         "RpcQueueTimeAvgTime", "RpcProcessingTimeNumOps",
@@ -24,17 +26,17 @@ public class NameNodeJMX {
         "UnderReplicatedBlocks", "CorruptBlocks", "FsyncNumOps", "FsyncAvgTime"
     };
 
-    public static Map<String, String> getJMXValues(String host)
+    public static Map<String, String> getMetrics(String host)
             throws IOException {
         Map<String, String> values = new HashMap<String, String>();
-        String url = String.format("http://%s:%d/jmx", host, NAMENODE_PORT);
+        String url = String.format(JMX_URL, host, NAMENODE_PORT);
+        logger.info("fetching: " + url);
         String jmxJson = JMXUtils.fetchJMX(url);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jmxJson);
         for (String metric: metrics) {
             List<JsonNode> nodes = root.findValues(metric);
             if (nodes == null || nodes.size() != 1) {
-                logger.warn("get namenode metrics failed: " + metric);
                 continue;
             }
             String value = nodes.get(0).asText();

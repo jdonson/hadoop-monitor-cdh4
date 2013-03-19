@@ -16,7 +16,7 @@
 
 	<property>
 		<name>hbase.zookeeper.quorum</name>
-		<value>192.168.100.34,192.168.100.36,192.168.100.38</value>
+        <value>${hbase.zookeeper.quorum}</value>
 		<description>
 		</description>
 	</property>

@@ -7,14 +7,14 @@
 
 	<property>
 		<name>cluster.name</name>
-		<value>tg-hadoop-clustera</value>
+        <value>${cluster.name}</value>
 		<description>
 		</description>
 	</property>
 
 	<property>
 		<name>monitor.interval</name>
-		<value>60000</value>
+        <value>${monitor.interval}</value>
 		<description>
 			unit: ms
 		</description>
@@ -22,22 +22,21 @@
 
 	<property>
 		<name>datasink.server</name>
-		<value>192.168.100.52</value>
+        <value>${datasink.server}</value>
 		<description>
 		</description>
 	</property>
 
 	<property>
 		<name>datasink.profile</name>
-		<value>hadoop</value>
+        <value>${datasink.profile}</value>
 		<description>
 		</description>
 	</property>
 
 	<property>
 		<name>mail.receivers</name>
-		<value>fengzanfeng@wandoujia.com,315405572@qq.com,pengyuehui@wandoujia.com
-		</value>
+        <value>${mail.receivers}</value>
 	</property>
 
 	<property>

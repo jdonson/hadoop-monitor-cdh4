@@ -14,7 +14,7 @@ public class testRegionServerJMX extends TestCase {
                     + entry.getValue());
         }
 
-        kvs = NameNodeJMX.getJMXValues("hadoop-anode00");
+        kvs = NameNodeJMX.getMetrics("hadoop-anode00");
         for (Map.Entry<String, String> entry: kvs.entrySet()) {
             System.out.println("key: " + entry.getKey() + ", value: "
                     + entry.getValue());

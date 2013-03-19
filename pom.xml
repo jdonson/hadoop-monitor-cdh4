@@ -45,7 +45,37 @@
 		</dependency>
 	</dependencies>
 
+	<profiles>
+		<profile>
+			<id>debug</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.environment>debug</build.environment>
+			</properties>
+		</profile>
+		<profile>
+			<id>online</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<build.environment>online</build.environment>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
+		<filters>
+			<filter>src/main/filters/filter.properties.${build.environment}</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

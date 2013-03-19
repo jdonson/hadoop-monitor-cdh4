@@ -20,6 +20,7 @@ import com.wandoujia.hadoop.hdfs.HDFSClient;
 import com.wandoujia.hadoop.monitor.Monitor;
 import com.wandoujia.hadoop.monitor.comms.Constants;
 import com.wandoujia.hadoop.monitor.comms.MonitorConfig;
+import com.wandoujia.hadoop.monitor.jmx.DataNodeJMX;
 import com.wandoujia.hadoop.monitor.jmx.NameNodeJMX;
 
 public class HDFSMonitor extends Monitor implements Runnable {
@@ -83,20 +84,49 @@ public class HDFSMonitor extends Monitor implements Runnable {
         }
     }
 
-    private void sinkMetrics(String namenodeHost) {
+    private void sinkNameNodeMetrics(String host) {
         try {
-            Map<String, String> kvs = NameNodeJMX.getJMXValues(namenodeHost);
+            Map<String, String> kvs = NameNodeJMX.getMetrics(host);
             for (Map.Entry<String, String> kv: kvs.entrySet()) {
                 logger.info(String.format("key: %s, value: %s", kv.getKey(),
                         kv.getValue()));
             }
             // sink event to muce 2.0 dataserver
-            kvs.put(Constants.FIELD_KEY_NAMENODE, namenodeHost);
+            kvs.put(Constants.FIELD_KEY_NAMENODE, host);
             sink.sink(Constants.EVENT_HADOOP_NAMENODE_METRICS, kvs);
         } catch (IOException e) {
-            logger.error("", e);
+            logger.warn("sink namenode metrics failed: " + host);
+            logger.warn("", e);
         } catch (InterruptedException e) {
-            logger.error("", e);
+            logger.warn("", e);
+        } catch (Exception e) {
+            logger.warn("", e);
+        }
+    }
+
+    private void sinkDataNodeMetrics() throws IOException {
+        DatanodeInfo[] datanodeInfos = dfs
+                .getDataNodeStats(DatanodeReportType.LIVE);
+        for (DatanodeInfo datanodeInfo: datanodeInfos) {
+            String host = datanodeInfo.getHostName();
+            try {
+                Map<String, String> kvs = DataNodeJMX.getMetrics(datanodeInfo
+                        .getHostName());
+                for (Map.Entry<String, String> kv: kvs.entrySet()) {
+                    logger.info(String.format("key: %s, value: %s",
+                            kv.getKey(), kv.getValue()));
+                }
+                // sink event to muce 2.0 dataserver
+                kvs.put(Constants.FIELD_KEY_DATANODE, host);
+                sink.sink(Constants.EVENT_HADOOP_DATANODE_METRICS, kvs);
+            } catch (IOException e) {
+                logger.warn("sink datanode metrics failed: " + host);
+                logger.warn("", e);
+            } catch (InterruptedException e) {
+                logger.warn("", e);
+            } catch (Exception e) {
+                logger.warn("", e);
+            }
         }
     }
 
@@ -109,14 +139,13 @@ public class HDFSMonitor extends Monitor implements Runnable {
             }
             try {
                 URI uri = dfs.getUri();
-
                 String serviceName = dfs.getCanonicalServiceName();
                 long corruptBlocksCount = dfs.getCorruptBlocksCount();
                 long missingBlocksCount = dfs.getMissingBlocksCount();
                 long underReplicateBlocksCount = dfs
                         .getUnderReplicatedBlocksCount();
-                DatanodeInfo[] deadDataNodes = dfs.getClient().datanodeReport(
-                        DatanodeReportType.DEAD);
+                DatanodeInfo[] deadDataNodes = dfs
+                        .getDataNodeStats(DatanodeReportType.DEAD);
                 List<Statistics> statistics = DistributedFileSystem
                         .getAllStatistics();
                 long used = dfs.getUsed();
@@ -130,7 +159,9 @@ public class HDFSMonitor extends Monitor implements Runnable {
                 logger.info("hdfs used: " + used);
                 corruptBlocks(corruptBlocksCount);
                 deadDataNodes(deadDataNodes);
-                this.sinkMetrics(uri.getHost());
+                sinkNameNodeMetrics(uri.getHost());
+                sinkDataNodeMetrics();
+
             } catch (IOException e) {
                 logger.error("Monitor Thread IOException", e);
                 String msg = e.getMessage();

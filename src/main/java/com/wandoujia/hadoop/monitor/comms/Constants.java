@@ -30,6 +30,8 @@ public class Constants {
 
     public static final String FIELD_KEY_NAMENODE = "namenode";
 
+    public static final String FIELD_KEY_DATANODE = "datanode";
+
     public static final String FIELD_KEY_REGIONSERVER = "regionserver";
 
     public static final String KEY_DATASINK_DATASERVER = "datasink.server";
@@ -39,6 +41,8 @@ public class Constants {
     // public static final String DATASINK_DATASERVER = "l.wandoujia.com";
 
     public static final String EVENT_HADOOP_NAMENODE_METRICS = "hadoop.namenode.metrics";
+
+    public static final String EVENT_HADOOP_DATANODE_METRICS = "hadoop.datanode.metrics";
 
     public static final String EVENT_HBASE_REGIONSERVER_METRICS = "hbase.regionserver.metrics";
 

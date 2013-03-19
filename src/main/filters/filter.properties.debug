@@ -1,0 +1,22 @@
+# HDFS
+hdfs.uri=hdfs://192.168.100.34:54310
+hadoop.job.ugi=root,root123
+
+# HBase
+hbase.zookeeper.quorum=192.168.100.34,192.168.100.36,192.168.100.38
+hbase.table.pool.size=10
+
+# Hive
+hive.address=
+hive.port=10000
+
+# cluster
+cluster.name=tg-hadoop-clustera
+
+# metrics sink
+datasink.server=192.168.100.52
+datasink.profile=hadoop
+
+# monitor
+monitor.interval=60000
+mail.receivers=fengzanfeng@wandoujia.com,315405572@qq.com,pengyuehui@wandoujia.com
