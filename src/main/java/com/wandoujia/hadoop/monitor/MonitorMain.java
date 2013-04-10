@@ -32,7 +32,6 @@ public class MonitorMain {
         logger.info("startup hadoop/hbase monitor...");
         MonitorMain monitor = new MonitorMain();
         monitor.startup();
-        logger.info("shutdown hadoop/hbase monitor...");
     }
 
 }

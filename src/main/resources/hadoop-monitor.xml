@@ -5,49 +5,49 @@
 
 <configuration>
 
-	<property>
-		<name>cluster.name</name>
+    <property>
+        <name>cluster.name</name>
         <value>${cluster.name}</value>
-		<description>
-		</description>
-	</property>
+        <description>
+        </description>
+    </property>
 
-	<property>
-		<name>monitor.interval</name>
+    <property>
+        <name>monitor.interval</name>
         <value>${monitor.interval}</value>
-		<description>
-			unit: ms
-		</description>
-	</property>
+        <description>
+            unit: ms
+        </description>
+    </property>
 
-	<property>
-		<name>datasink.server</name>
+    <property>
+        <name>datasink.server</name>
         <value>${datasink.server}</value>
-		<description>
-		</description>
-	</property>
+        <description>
+        </description>
+    </property>
 
-	<property>
-		<name>datasink.profile</name>
+    <property>
+        <name>datasink.profile</name>
         <value>${datasink.profile}</value>
-		<description>
-		</description>
-	</property>
+        <description>
+        </description>
+    </property>
 
-	<property>
-		<name>mail.receivers</name>
+    <property>
+        <name>mail.receivers</name>
         <value>${mail.receivers}</value>
-	</property>
+    </property>
 
-	<property>
-		<name>monitor.hbase.whitelist</name>
-		<value>hadoop-two</value>
-	</property>
+    <property>
+        <name>monitor.hbase.whitelist</name>
+        <value>hadoop-two</value>
+    </property>
 
-	<property>
-		<name>monitor.hdfs.whitelist</name>
-		<value>hadoop-two</value>
-	</property>
+    <property>
+        <name>monitor.hdfs.whitelist</name>
+        <value>hadoop-two</value>
+    </property>
 
 </configuration>
 

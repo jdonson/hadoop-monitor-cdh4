@@ -94,7 +94,10 @@ public class HBaseMonitor extends Monitor implements Runnable {
             int totalRequests = server.getTotalNumberOfRequests();
             int usedHeapMB = server.getUsedHeapMB();
             String msg = String
-                    .format("[RegionServer] %s: memstore size(MB): %d, regions: %d, requests: %d, storefiles: %d, storefileIndexSizeMB: %d, storefilesSizeMB: %d, totalRequests: %d, usedHeapMB: %d",
+                    .format("[RegionServer] %s: memstore size(MB): %d, "
+                            + "regions: %d, requests: %d, storefiles: %d, "
+                            + "storefileIndexSizeMB: %d, storefilesSizeMB: %d, "
+                            + "totalRequests: %d, usedHeapMB: %d",
                             regionServer, memStoreSizeMB, regions, requests,
                             storefiles, storefileIndexSizeMB, storefilesSizeMB,
                             totalRequests, usedHeapMB);
@@ -129,24 +132,50 @@ public class HBaseMonitor extends Monitor implements Runnable {
                 HMasterInterface hbaseMaster = hbaseAdmin.getMaster();
                 masterRunning(hbaseMaster.isMasterRunning());
                 ClusterStatus status = hbaseAdmin.getClusterStatus();
-                int deadServers = status.getDeadServers();
+                int deadHRegionServers = status.getDeadServers();
                 Collection<ServerName> deadServersName = status
                         .getDeadServerNames();
                 int regionsCount = status.getRegionsCount();
+                // request count per {hbase.period} in hadoop-metrics.properties
                 int requestsCount = status.getRequestsCount();
-                double avgLoad = status.getAverageLoad();
+                double avgLoads = status.getAverageLoad();
+                int tablesCount = hbaseAdmin.listTables().length;
                 Collection<ServerName> servers = status.getServers();
                 Map<String, HServerLoad> hServersLoad = new HashMap<String, HServerLoad>();
                 for (ServerName serverName: servers) {
                     hServersLoad.put(serverName.getHostname(),
                             status.getLoad(serverName));
                 }
-                logger.info("dead servers: " + deadServers);
-                logger.info("regions count: " + regionsCount);
-                logger.info("average load: " + avgLoad);
-                logger.info("requests count: " + requestsCount);
-                logger.info("servers: " + servers);
                 logger.info("server info: " + servers);
+                String msg = String
+                        .format("total region servers: %d, dead region servers: %d, "
+                                + "tables: %d, regions: %d, requests: %d, avg loads: %f",
+                                servers.size(), deadHRegionServers,
+                                tablesCount, regionsCount, requestsCount,
+                                avgLoads);
+                logger.info(msg);
+                try {
+                    Map<String, String> kvs = new HashMap<String, String>();
+                    kvs.put(Constants.FIELD_HBASE_REGIONSERVERS,
+                            String.valueOf(servers.size()));
+                    kvs.put(Constants.FIELD_HBASE_DEAD_REGIONSERVERS,
+                            String.valueOf(deadHRegionServers));
+                    kvs.put(Constants.FIELD_HBASE_TABLES,
+                            String.valueOf(tablesCount));
+                    kvs.put(Constants.FIELD_HBASE_REGIONS,
+                            String.valueOf(regionsCount));
+                    kvs.put(Constants.FIELD_HBASE_REQUESTS,
+                            String.valueOf(requestsCount));
+                    kvs.put(Constants.FIELD_HBASE_AVG_LOADS,
+                            String.valueOf(avgLoads));
+                    // sink event to muce 2.0 dataserver
+                    sink.sink(Constants.EVENT_HBASE_MASTER_METRICS, kvs);
+                } catch (IOException e) {
+                    logger.error("", e);
+                } catch (InterruptedException e) {
+                    logger.error("", e);
+                }
+
                 deadRegionServers(deadServersName);
                 liveRegionServerHealth(hServersLoad);
             } catch (IOException e) {

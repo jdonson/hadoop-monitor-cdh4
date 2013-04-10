@@ -24,7 +24,10 @@ public class RegionServerJMX {
         "blockCacheHitRatio", "splitRegionNumOps", "splitRegionAvgTime",
         "compactionQueueSize", "compactionTimeNumOps", "compactionTimeAvgTime",
         "compactionSizeNumOps", "compactionSizeAvgTime", "regions",
-        "storefiles", "stores", "requests"
+        "storefiles", "stores", "requests", "blockCacheCount",
+        "blockCacheEvictedCount", "blockCacheHitCount", "blockCacheMissCount",
+        "fsReadLatencyAvgTime", "fsReadLatencyNumOps", "fsWriteLatencyAvgTime",
+        "fsWriteLatencyNumOps", "NumOpenConnections", "callQueueLen"
     };
 
     public static Map<String, String> getJMXValues(String host)

@@ -38,12 +38,26 @@ public class Constants {
 
     public static final String KEY_DATASINK_PROFILE = "datasink.profile";
 
-    // public static final String DATASINK_DATASERVER = "l.wandoujia.com";
-
     public static final String EVENT_HADOOP_NAMENODE_METRICS = "hadoop.namenode.metrics";
 
     public static final String EVENT_HADOOP_DATANODE_METRICS = "hadoop.datanode.metrics";
 
+    // TODO: region servers count / tables count / regions count
+    public static final String EVENT_HBASE_MASTER_METRICS = "hbase.master.metrics";
+
     public static final String EVENT_HBASE_REGIONSERVER_METRICS = "hbase.regionserver.metrics";
+
+    // fields
+    public static final String FIELD_HBASE_TABLES = "tables";
+
+    public static final String FIELD_HBASE_REGIONS = "regions";
+
+    public static final String FIELD_HBASE_REGIONSERVERS = "regionservers";
+
+    public static final String FIELD_HBASE_DEAD_REGIONSERVERS = "dead_regionservers";
+
+    public static final String FIELD_HBASE_REQUESTS = "requests";
+
+    public static final String FIELD_HBASE_AVG_LOADS = "avg_loads";
 
 }

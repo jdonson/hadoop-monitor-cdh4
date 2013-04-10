@@ -66,6 +66,7 @@ public class HDFSMonitor extends Monitor implements Runnable {
         return true;
     }
 
+    @SuppressWarnings("unused")
     private void corruptBlocks(long corruptBlocksCount) {
         if (corruptBlocksCount > 0) {
             String msg = "found corrupt blocks: " + corruptBlocksCount;
@@ -157,7 +158,7 @@ public class HDFSMonitor extends Monitor implements Runnable {
                         + underReplicateBlocksCount);
                 logger.info("hdfs statistics: " + statistics);
                 logger.info("hdfs used: " + used);
-                corruptBlocks(corruptBlocksCount);
+                // corruptBlocks(corruptBlocksCount);
                 deadDataNodes(deadDataNodes);
                 sinkNameNodeMetrics(uri.getHost());
                 sinkDataNodeMetrics();
