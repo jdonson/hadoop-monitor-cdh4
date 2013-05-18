@@ -23,14 +23,16 @@ public class DataNodeJMX {
         "WritesFromLocalClient", "WritesFromRemoteClient", "FsyncCount",
         "VolumeFailures", "RpcQueueTimeNumOps", "RpcQueueTimeAvgTime",
         "RpcProcessingTimeNumOps", "RpcProcessingTimeAvgTime",
-        "NumOpenConnections", "CallQueueLength"
+        "NumOpenConnections", "CallQueueLength", "ReadBlockOpNumOps",
+        "ReadBlockOpAvgTime", "WriteBlockOpNumOps", "WriteBlockOpAvgTime",
+        "BlockReportsAvgTime"
     };
 
     public static Map<String, String> getMetrics(String host)
             throws IOException {
         Map<String, String> values = new HashMap<String, String>();
         String url = String.format(JMX_URL, host, DATANODE_PORT);
-        logger.info("fetching: " + url);
+        logger.info("fetching jmx from url: " + url);
         String jmxJson = JMXUtils.fetchJMX(url);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jmxJson);

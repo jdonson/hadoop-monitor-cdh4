@@ -23,14 +23,17 @@ public class NameNodeJMX {
         "RpcProcessingTimeAvgTime", "NumOpenConnections", "CallQueueLength",
         "CapacityTotalGB", "CapacityUsedGB", "CapacityRemainingGB",
         "TotalLoad", "BlocksTotal", "FilesTotal", "PendingReplicationBlocks",
-        "UnderReplicatedBlocks", "CorruptBlocks", "FsyncNumOps", "FsyncAvgTime"
+        "UnderReplicatedBlocks", "CorruptBlocks", "FsyncNumOps",
+        "FsyncAvgTime", "CreateFileOps", "FilesCreated", "FilesRenamed",
+        "GetListingOps", "DeleteFileOps", "FilesDeleted", "AddBlockOps",
+        "NumLiveDataNodes", "NumDeadDataNodes"
     };
 
     public static Map<String, String> getMetrics(String host)
             throws IOException {
         Map<String, String> values = new HashMap<String, String>();
         String url = String.format(JMX_URL, host, NAMENODE_PORT);
-        logger.info("fetching: " + url);
+        logger.info("fetching jmx from url: " + url);
         String jmxJson = JMXUtils.fetchJMX(url);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jmxJson);

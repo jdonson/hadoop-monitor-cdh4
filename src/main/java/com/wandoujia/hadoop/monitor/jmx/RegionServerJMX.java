@@ -27,13 +27,15 @@ public class RegionServerJMX {
         "storefiles", "stores", "requests", "blockCacheCount",
         "blockCacheEvictedCount", "blockCacheHitCount", "blockCacheMissCount",
         "fsReadLatencyAvgTime", "fsReadLatencyNumOps", "fsWriteLatencyAvgTime",
-        "fsWriteLatencyNumOps", "NumOpenConnections", "callQueueLen"
+        "fsWriteLatencyNumOps", "NumOpenConnections", "callQueueLen",
+        "readRequestsCount", "writeRequestsCount"
     };
 
     public static Map<String, String> getJMXValues(String host)
             throws IOException {
         Map<String, String> values = new HashMap<String, String>();
         String url = String.format("http://%s:%d/jmx", host, REGIONSERVER_PORT);
+        logger.info("fetching jmx from url: " + url);
         String jmxJson = JMXUtils.fetchJMX(url);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(jmxJson);
